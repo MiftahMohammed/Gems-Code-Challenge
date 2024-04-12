@@ -1,0 +1,105 @@
+controllers:
+  - name: EnergyController
+    routes:
+      - name: GetEnergyDistribution
+        endpoint: "/energy/distribution"
+        method: "GET"
+        description: "Get energy distribution based on the provided payload"
+        request:
+          parameters:
+            - name: load
+              type: number
+              description: "Total energy load (MWh)"
+              example: 480
+            - name: fuels
+              type: object
+              description: "Fuels information"
+              properties:
+                gas:
+                  type: number
+                  description: "Gas cost (euro/MWh)"
+                  example: 13.4
+                kerosine:
+                  type: number
+                  description: "Kerosine cost (euro/MWh)"
+                  example: 50.8
+                co2:
+                  type: number
+                  description: "CO2 cost (euro/ton)"
+                  example: 20
+                wind:
+                  type: number
+                  description: "Wind percentage (%)"
+                  example: 60
+            - name: powerplants
+              type: array
+              description: "Powerplants information"
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: "Name of the powerplant"
+                    example: "gasfiredbig1"
+                  type:
+                    type: string
+                    description: "Type of the powerplant"
+                    example: "gasfired"
+                  efficiency:
+                    type: number
+                    description: "Efficiency of the powerplant"
+                    example: 0.53
+                  pmin:
+                    type: number
+                    description: "Minimum power output (MW)"
+                    example: 100
+                  pmax:
+                    type: number
+                    description: "Maximum power output (MW)"
+                    example: 460
+          responses:
+            - status: 200
+              description: "Successful response containing energy distribution"
+              body:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      description: "Name of the powerplant"
+                    p:
+                      type: number
+                      format: float
+                      description: "Power produced by the powerplant"
+              example: |
+                [
+                    {
+                        "name": "windpark1",
+                        "p": 90.0
+                    },
+                    {
+                        "name": "windpark2",
+                        "p": 21.6
+                    },
+                    {
+                        "name": "gasfiredbig1",
+                        "p": 460.0
+                    },
+                    {
+                        "name": "gasfiredbig2",
+                        "p": 338.4
+                    },
+                    {
+                        "name": "gasfiredsomewhatsmaller",
+                        "p": 0.0
+                    },
+                    {
+                        "name": "tj1",
+                        "p": 0.0
+                    }
+                ]
+            - status: 400
+              description: "Bad Request - Invalid payload format"
+            - status: 500
+              description: "Internal Server Error - An unexpected error occurred"
